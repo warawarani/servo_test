@@ -40,17 +40,19 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim16;
+
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 char set_id[4]={
-  0b11100000,
+  0b11100001,
   0b00000001,
   0b00000001,
   0b00000001
 };
-char target[][3]={{
+char target[3][3]={{
     /*7500*/
     0b10000001,
     0b00111010,
@@ -67,6 +69,9 @@ char target[][3]={{
     0b01111000
   }
 };
+int timeCount;
+int flag[3];
+int round;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,13 +79,28 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM16_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim == &htim16){
+      timeCount++;
+      if(timeCount>=50){
+        flag[0]= (round==0)?1:flag[0];
+        flag[1]= (round==1)?1:flag[1];
+        flag[0]= (round==2)?1:flag[0];
+        flag[2]= (round==3)?1:flag[2];
+        round++;
+        timeCount=0;
+      }
+      round= (round>=4)?0:round;
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -114,35 +134,42 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
   for(int n=0;n<4;n++){
       HAL_UART_Transmit(&huart1,&set_id[n],sizeof(set_id[n]),0xFFFF);  
   }
+  HAL_TIM_Base_Start_IT(&htim16);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    for(int n=0;n<3;n++){
-      HAL_UART_Transmit(&huart1,&target[0][n],sizeof(target[0][n]),0xFFFF);  
+    if(flag[0]){
+      for(int n=0;n<3;n++){
+        HAL_UART_Transmit(&huart1,&target[0][n],sizeof(target[0][n]),0xFFFF);
+        HAL_UART_Transmit(&huart2,&target[0][n],sizeof(target[0][n]),0xFFFF);
+        flag[0]=0;
+      }
     }
-    HAL_Delay(500);
     
-    for(int n=0;n<3;n++){
-      HAL_UART_Transmit(&huart1,&target[1][n],sizeof(target[1][n]),0xFFFF);  
+    if(flag[1]){
+      for(int n=0;n<3;n++){
+        HAL_UART_Transmit(&huart1,&target[1][n],sizeof(target[1][n]),0xFFFF);
+        HAL_UART_Transmit(&huart2,&target[1][n],sizeof(target[1][n]),0xFFFF);
+        flag[1]=0;
+      }
     }
-    HAL_Delay(500);
     
-for(int n=0;n<3;n++){
-      HAL_UART_Transmit(&huart1,&target[0][n],sizeof(target[0][n]),0xFFFF);  
+    if(flag[2]){
+      for(int n=0;n<3;n++){
+        HAL_UART_Transmit(&huart1,&target[2][n],sizeof(target[2][n]),0xFFFF);
+        HAL_UART_Transmit(&huart2,&target[2][n],sizeof(target[2][n]),0xFFFF);
+        flag[2]=0;
+      }
     }
-    HAL_Delay(500);
-
-    for(int n=0;n<3;n++){
-      HAL_UART_Transmit(&huart1,&target[2][n],sizeof(target[2][n]),0xFFFF);  
-    }
-    HAL_Delay(500);
+    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -191,6 +218,38 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief TIM16 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM16_Init(void)
+{
+
+  /* USER CODE BEGIN TIM16_Init 0 */
+
+  /* USER CODE END TIM16_Init 0 */
+
+  /* USER CODE BEGIN TIM16_Init 1 */
+
+  /* USER CODE END TIM16_Init 1 */
+  htim16.Instance = TIM16;
+  htim16.Init.Prescaler = 9;
+  htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim16.Init.Period = 7999;
+  htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim16.Init.RepetitionCounter = 0;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM16_Init 2 */
+
+  /* USER CODE END TIM16_Init 2 */
+
 }
 
 /**

@@ -268,18 +268,6 @@
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
 			"path" : "Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c",
 			"sourceGroupIndex" : 0
 		},
@@ -353,6 +341,18 @@
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
 			"path" : "Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c",
 			"sourceGroupIndex" : 0
 		},
 		{
