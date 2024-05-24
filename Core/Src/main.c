@@ -46,13 +46,13 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-char set_id[4]={
-  0b11100001,
-  0b00000001,
-  0b00000001,
-  0b00000001
+uint8_t set_id[4]={
+  0xE1,//0b11100001,
+  0x01,//0b00000001,
+  0x01,//0b00000001,
+  0x01,//0b00000001
 };
-char target[3][3]={{
+uint8_t target[3][3]={{
     /*7500*/
     0b10000001,
     0b00111010,
@@ -90,7 +90,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim == &htim16){
       timeCount++;
-      if(timeCount>=50){
+      if(timeCount>=100){
         flag[0]= (round==0)?1:flag[0];
         flag[1]= (round==1)?1:flag[1];
         flag[0]= (round==2)?1:flag[0];
@@ -117,6 +117,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+
   HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -146,28 +147,29 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    //HAL_UART_Transmit(&huart2,&target[0][0],sizeof(target[0][0]),0xFFFF);
     if(flag[0]){
       for(int n=0;n<3;n++){
-        HAL_UART_Transmit(&huart1,&target[0][n],sizeof(target[0][n]),0xFFFF);
-        HAL_UART_Transmit(&huart2,&target[0][n],sizeof(target[0][n]),0xFFFF);
-        flag[0]=0;
+        //HAL_UART_Transmit(&huart1,&target[0][n],sizeof(target[0][n]),0xFFFF);
+        HAL_UART_Transmit(&huart2,&target[0][n],sizeof(target[0][n]),0xFFFF);   
       }
+      flag[0]=0;
     }
     
     if(flag[1]){
       for(int n=0;n<3;n++){
-        HAL_UART_Transmit(&huart1,&target[1][n],sizeof(target[1][n]),0xFFFF);
+        //HAL_UART_Transmit(&huart1,&target[1][n],sizeof(target[1][n]),0xFFFF);
         HAL_UART_Transmit(&huart2,&target[1][n],sizeof(target[1][n]),0xFFFF);
-        flag[1]=0;
       }
+      flag[1]=0;
     }
     
     if(flag[2]){
       for(int n=0;n<3;n++){
-        HAL_UART_Transmit(&huart1,&target[2][n],sizeof(target[2][n]),0xFFFF);
+        //HAL_UART_Transmit(&huart1,&target[2][n],sizeof(target[2][n]),0xFFFF);
         HAL_UART_Transmit(&huart2,&target[2][n],sizeof(target[2][n]),0xFFFF);
-        flag[2]=0;
       }
+      flag[2]=0;
     }
     
     /* USER CODE END WHILE */
@@ -303,10 +305,10 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 38400;
+  huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Parity = UART_PARITY_EVEN;
   huart2.Init.Mode = UART_MODE_TX_RX;
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
